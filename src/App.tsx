@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { User } from "./types";
+import { getData } from "./utils/data.utils";
 
 import CardList from "./components/card-list/card-list.component";
 import SearchBox from "./components/search-box/search-box.component";
@@ -13,14 +14,13 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(API_BASE_URL);
-      const responseJSON = await response.json();
-      setUsers(responseJSON);
+      const usersJSON = await getData<User[]>(API_BASE_URL);
+      setUsers(usersJSON);
     };
     fetchData();
   }, []);
 
-  const handleTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextInput = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
 
@@ -37,7 +37,7 @@ function App() {
 
 function filterUsers(input: string, users: User[]): User[] {
   const cleanedInput = input.toLowerCase().trim();
-  const filteredUsers = [];
+  const filteredUsers: User[] = [];
   for (const user of users) {
     const userName = user.name.toLowerCase().trim();
     if (startsWith(userName, cleanedInput)) filteredUsers.push(user);
